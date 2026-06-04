@@ -325,8 +325,47 @@ body {
   color: var(--text2); margin-bottom: 1.2rem; line-height: 1.6;
 }
 
-/* Footer */
-.footer { text-align: center; padding: 2rem; color: var(--text3); font-size: 12px; border-top: 1px solid var(--border); }
+/* Day modal */
+.day-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.7);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.day-modal-overlay.show { display: flex; }
+.day-modal-box {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  padding: 1.5rem;
+  width: min(420px, 100%);
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+}
+.day-modal-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 20px;
+  letter-spacing: 1px;
+  color: var(--accent2);
+  margin-bottom: 1rem;
+}
+.day-event-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: .8rem 1rem;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: border-color .15s;
+}
+.day-event-item:hover { border-color: var(--accent); }
+.day-event-name { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.day-event-info { font-size: 11px; color: var(--text2); } text-align: center; padding: 2rem; color: var(--text3); font-size: 12px; border-top: 1px solid var(--border); }
 
 /* Mobile */
 @media (max-width: 600px) {
@@ -429,6 +468,14 @@ body {
     <div class="modal-row"><span class="modal-key">📞 연락처</span><span class="modal-val" id="m-contact"></span></div>
     <div class="modal-row" id="m-note-row"><span class="modal-key">📝 비고</span><span class="modal-val" id="m-note"></span></div>
     <button class="share-copy" onclick="copyShare()">📋 카카오톡 공유 텍스트 복사</button>
+  </div>
+</div>
+
+<div class="day-modal-overlay" id="day-modal-overlay" onclick="dayOverlayClose(event)">
+  <div class="day-modal-box">
+    <button class="modal-close" onclick="closeDayModal()">✕</button>
+    <div class="day-modal-title" id="day-modal-title"></div>
+    <div id="day-modal-list"></div>
   </div>
 </div>
 
@@ -592,7 +639,12 @@ function renderCal() {
       c.appendChild(t);
     });
     if (de.length > 2) {
-      const m = document.createElement("div"); m.className = "more-tag"; m.textContent = `+${de.length-2}개 더`; c.appendChild(m);
+      const m = document.createElement("div");
+      m.className = "more-tag";
+      m.textContent = `+${de.length-2}개 더`;
+      m.style.cursor = "pointer";
+      m.onclick = (e) => { e.stopPropagation(); openDayModal(ds, de); };
+      c.appendChild(m);
     }
     grid.appendChild(c);
   }
@@ -677,6 +729,29 @@ function openModal(ev) {
 }
 function closeModal() { document.getElementById("modal-overlay").classList.remove("show"); selEv = null; }
 function overlayClose(e) { if (e.target===document.getElementById("modal-overlay")) closeModal(); }
+
+function openDayModal(ds, evts) {
+  const d = new Date(ds);
+  document.getElementById("day-modal-title").textContent =
+    `${d.getMonth()+1}월 ${d.getDate()}일 (${DAYS[d.getDay()]}) — ${evts.length}개 일정`;
+  const list = document.getElementById("day-modal-list");
+  list.innerHTML = "";
+  evts.forEach(ev => {
+    const item = document.createElement("div");
+    item.className = "day-event-item";
+    item.innerHTML = `
+      <div class="day-event-name">
+        <span class="genre-badge ${BADGE_CLASS[ev.genre]||"badge-mixed"}" style="font-size:9px;margin-right:6px">${GENRE_NAME[ev.genre]||ev.genre}</span>
+        ${ev.name}
+      </div>
+      <div class="day-event-info">📍 ${ev.venue} &nbsp;|&nbsp; ⏰ ${ev.time} &nbsp;|&nbsp; 🎟 ${ev.price}</div>`;
+    item.onclick = () => { closeDayModal(); openModal(ev); };
+    list.appendChild(item);
+  });
+  document.getElementById("day-modal-overlay").classList.add("show");
+}
+function closeDayModal() { document.getElementById("day-modal-overlay").classList.remove("show"); }
+function dayOverlayClose(e) { if (e.target===document.getElementById("day-modal-overlay")) closeDayModal(); }
 
 function copyShare() {
   if (!selEv) return;
