@@ -504,18 +504,18 @@ function loadCSV() {
   msg.className = "";
   msg.textContent = "구글 시트에서 최신 데이터 불러오는 중...";
 
-  // CORS 우회: 캐시 버스팅 + cors 모드
-  const url = CSV_URL + "&cachebust=" + Date.now();
-  fetch(url, { cache: "no-cache", mode: "cors" })
-    .then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.arrayBuffer(); })
-    .then(buf => {
-      const text = new TextDecoder("utf-8").decode(buf).replace(/^\uFEFF/, "");
+  // CORS 프록시를 통해 구글 시트 CSV 가져오기
+  const proxyUrl = "https://api.allorigins.win/get?url=" + encodeURIComponent(CSV_URL);
+  fetch(proxyUrl)
+    .then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(data => {
+      const text = data.contents.replace(/^\uFEFF/, ""); // BOM 제거
       return text;
     })
     .then(text => {
       const rows = parseCSV(text);
-      if (rows.length < 4) throw new Error("데이터 없음");
-      // 1~3행 = 헤더/설명행, 건너뜀 (4행부터 실제 데이터)
+      if (rows.length < 4) throw new Error("데이터 없음 (rows: " + rows.length + ")");
+      // 1~3행 = 제목/설명/헤더행, 건너뜀 (4행부터 실제 데이터)
       const parsed = [];
       for (let i = 3; i < rows.length; i++) {
         const r = rows[i];
