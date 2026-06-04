@@ -142,20 +142,20 @@ body {
   background: var(--border);
   border-bottom: 1px solid var(--border);
 }
-.stat-item { background: var(--surface); padding: .9rem 1.2rem; text-align: center; }
-.stat-num { font-family: 'Bebas Neue', cursive; font-size: 28px; color: var(--accent); letter-spacing: 1px; line-height: 1; }
-.stat-lbl { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.stat-item { background: var(--surface); padding: .5rem 1rem; text-align: center; }
+.stat-num { font-family: 'Bebas Neue', cursive; font-size: 22px; color: var(--accent); letter-spacing: 1px; line-height: 1; }
+.stat-lbl { font-size: 10px; color: var(--text2); margin-top: 1px; }
 
 /* Month nav */
 .month-nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.5rem;
+  padding: .5rem 1.5rem;
   background: var(--surface2);
   border-bottom: 1px solid var(--border);
 }
-.month-label { font-family: 'Bebas Neue', cursive; font-size: 22px; letter-spacing: 2px; color: var(--text); }
+.month-label { font-family: 'Bebas Neue', cursive; font-size: 18px; letter-spacing: 2px; color: var(--text); }
 .nav-arrow {
   background: none;
   border: 1px solid var(--border2);
@@ -172,18 +172,18 @@ body {
 .nav-arrow:hover { border-color: var(--accent); color: var(--accent); }
 
 /* Calendar */
-.cal-wrapper { padding: 1rem 1.5rem 2rem; }
-.cal-head { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 4px; }
-.cal-head-day { text-align: center; font-size: 11px; color: var(--text3); padding: 4px; text-transform: uppercase; letter-spacing: 1px; }
+.cal-wrapper { padding: .5rem 1rem 1rem; }
+.cal-head { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-bottom: 3px; }
+.cal-head-day { text-align: center; font-size: 11px; color: var(--text3); padding: 3px; text-transform: uppercase; letter-spacing: 1px; }
 .cal-head-day:first-child { color: #e63946; }
 .cal-head-day:last-child { color: #4a9eff; }
-.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
 .cal-cell {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  min-height: 80px;
-  padding: 6px;
+  border-radius: 6px;
+  min-height: 58px;
+  padding: 4px;
   transition: border-color .15s;
 }
 .cal-cell.other-month { opacity: .3; }
