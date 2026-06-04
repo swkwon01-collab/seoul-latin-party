@@ -182,9 +182,10 @@ body {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 6px;
-  min-height: 58px;
+  height: 58px;
   padding: 4px;
   transition: border-color .15s;
+  overflow: hidden;
 }
 .cal-cell.other-month { opacity: .3; }
 .cal-cell.has-event { border-color: var(--border2); cursor: pointer; }
@@ -630,18 +631,21 @@ function renderCal() {
     const dow = new Date(year, month, d).getDay();
     const c = document.createElement("div");
     c.className = "cal-cell" + (de.length?" has-event":"") + (isT?" is-today":"") + (dow===0?" sun":"");
+    if (de.length > 0) {
+      c.onclick = () => openDayModal(ds, de);
+    }
     const dn = document.createElement("div"); dn.className = "cell-date"; dn.textContent = d; c.appendChild(dn);
-    de.slice(0,2).forEach(ev => {
+    de.slice(0,1).forEach(ev => {
       const t = document.createElement("span");
       t.className = "event-tag " + (TAG_CLASS[ev.genre] || "tag-mixed");
       t.textContent = ev.name;
       t.onclick = (e) => { e.stopPropagation(); openModal(ev); };
       c.appendChild(t);
     });
-    if (de.length > 2) {
+    if (de.length > 1) {
       const m = document.createElement("div");
       m.className = "more-tag";
-      m.textContent = `+${de.length-2}개 더`;
+      m.textContent = de.length === 1 ? "" : `+${de.length-1}개 더`;
       m.style.cursor = "pointer";
       m.onclick = (e) => { e.stopPropagation(); openDayModal(ds, de); };
       c.appendChild(m);
