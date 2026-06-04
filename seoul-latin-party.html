@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>서울 라틴댄스 파티 캘린더</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --surface: #13131a;
+  --surface2: #1c1c27;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.15);
+  --accent: #e63946;
+  --accent2: #f4a261;
+  --text: #f0f0f5;
+  --text2: #9898b0;
+  --text3: #55556a;
+  --salsa: #1d6fa4;
+  --salsa-bg: rgba(29,111,164,0.15);
+  --bachata: #b5631a;
+  --bachata-bg: rgba(181,99,26,0.15);
+  --kizomba: #7c3aed;
+  --kizomba-bg: rgba(124,58,237,0.15);
+  --mixed: #15803d;
+  --mixed-bg: rgba(21,128,61,0.15);
+  --zouk: #be185d;
+  --zouk-bg: rgba(190,24,93,0.15);
+  --special: #b45309;
+  --special-bg: rgba(180,83,9,0.15);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans KR', sans-serif;
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* Header */
+.header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 1.2rem 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.header-left { display: flex; align-items: baseline; gap: 12px; }
+.logo { font-family: 'Bebas Neue', cursive; font-size: 26px; letter-spacing: 2px; color: var(--accent); line-height: 1; }
+.logo-sub { font-size: 12px; color: var(--text2); letter-spacing: 1px; text-transform: uppercase; }
+.header-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.view-btn {
+  background: none;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+  transition: all .2s;
+}
+.view-btn.active, .view-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* Loading */
+.loading-bar {
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  padding: .6rem 1.5rem;
+  font-size: 12px;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.loading-spinner {
+  width: 14px; height: 14px;
+  border: 2px solid var(--border2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.sync-ok { color: #22c55e; }
+.sync-err { color: var(--accent); }
+.sync-time { color: var(--text3); font-size: 11px; margin-left: auto; }
+.refresh-btn {
+  background: none;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+.refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Filters */
+.filters-bar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: .75rem 1.5rem;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.filter-chip {
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--text2);
+  cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+  transition: all .15s;
+}
+.filter-chip:hover { border-color: var(--accent); color: var(--accent); }
+.filter-chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.filter-chip.f-salsa.active { background: var(--salsa); border-color: var(--salsa); }
+.filter-chip.f-bachata.active { background: var(--bachata); border-color: var(--bachata); }
+.filter-chip.f-kizomba.active { background: var(--kizomba); border-color: var(--kizomba); }
+.filter-chip.f-mixed.active { background: var(--mixed); border-color: var(--mixed); }
+.filter-chip.f-zouk.active { background: var(--zouk); border-color: var(--zouk); }
+
+/* Stats */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.stat-item { background: var(--surface); padding: .9rem 1.2rem; text-align: center; }
+.stat-num { font-family: 'Bebas Neue', cursive; font-size: 28px; color: var(--accent); letter-spacing: 1px; line-height: 1; }
+.stat-lbl { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+/* Month nav */
+.month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+.month-label { font-family: 'Bebas Neue', cursive; font-size: 22px; letter-spacing: 2px; color: var(--text); }
+.nav-arrow {
+  background: none;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  width: 34px; height: 34px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .15s;
+}
+.nav-arrow:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Calendar */
+.cal-wrapper { padding: 1rem 1.5rem 2rem; }
+.cal-head { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 4px; }
+.cal-head-day { text-align: center; font-size: 11px; color: var(--text3); padding: 4px; text-transform: uppercase; letter-spacing: 1px; }
+.cal-head-day:first-child { color: #e63946; }
+.cal-head-day:last-child { color: #4a9eff; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-cell {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  min-height: 80px;
+  padding: 6px;
+  transition: border-color .15s;
+}
+.cal-cell.other-month { opacity: .3; }
+.cal-cell.has-event { border-color: var(--border2); cursor: pointer; }
+.cal-cell.has-event:hover { border-color: var(--accent); }
+.cal-cell.is-today { border-color: var(--accent); border-width: 1.5px; }
+.cell-date { font-size: 11px; color: var(--text3); margin-bottom: 4px; font-weight: 500; }
+.is-today .cell-date { color: var(--accent); font-weight: 700; }
+.cal-cell:first-child .cell-date, .sun .cell-date { color: rgba(230,57,70,.7); }
+.event-tag {
+  font-size: 10px;
+  padding: 2px 5px;
+  border-radius: 4px;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  display: block;
+}
+.tag-salsa { background: var(--salsa-bg); color: #60b8f0; }
+.tag-bachata { background: var(--bachata-bg); color: #f4a261; }
+.tag-kizomba { background: var(--kizomba-bg); color: #c084fc; }
+.tag-mixed { background: var(--mixed-bg); color: #4ade80; }
+.tag-zouk { background: var(--zouk-bg); color: #f472b6; }
+.tag-special { background: var(--special-bg); color: #fbbf24; }
+.more-tag { font-size: 10px; color: var(--text3); padding: 1px 4px; }
+
+/* List view */
+.list-wrapper { padding: 1rem 1.5rem 2rem; display: flex; flex-direction: column; gap: 10px; }
+.list-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  display: grid;
+  grid-template-columns: 70px 1fr auto;
+  gap: 14px;
+  align-items: start;
+  cursor: pointer;
+  transition: border-color .15s, transform .1s;
+}
+.list-card:hover { border-color: var(--border2); transform: translateY(-1px); }
+.lc-date { text-align: center; }
+.lc-m { font-size: 11px; color: var(--text2); }
+.lc-d { font-family: 'Bebas Neue', cursive; font-size: 30px; color: var(--text); line-height: 1; }
+.lc-w { font-size: 11px; color: var(--text3); }
+.lc-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.lc-venue { font-size: 12px; color: var(--text2); margin-bottom: 3px; }
+.lc-info { font-size: 11px; color: var(--text3); }
+.genre-badge { font-size: 10px; padding: 3px 10px; border-radius: 20px; white-space: nowrap; font-weight: 500; }
+.badge-salsa { background: var(--salsa-bg); color: #60b8f0; }
+.badge-bachata { background: var(--bachata-bg); color: #f4a261; }
+.badge-kizomba { background: var(--kizomba-bg); color: #c084fc; }
+.badge-mixed { background: var(--mixed-bg); color: #4ade80; }
+.badge-zouk { background: var(--zouk-bg); color: #f472b6; }
+.badge-special { background: var(--special-bg); color: #fbbf24; }
+
+/* Empty */
+.empty-msg { text-align: center; padding: 3rem; color: var(--text3); font-size: 14px; }
+
+/* Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.7);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.modal-overlay.show { display: flex; }
+.modal-box {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  padding: 1.5rem;
+  width: min(460px, 100%);
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+}
+.modal-close {
+  position: absolute; top: 1rem; right: 1rem;
+  background: none; border: 1px solid var(--border2);
+  color: var(--text2); width: 28px; height: 28px;
+  border-radius: 6px; cursor: pointer; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-close:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+.modal-title { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 8px; padding-right: 2rem; line-height: 1.4; }
+.modal-row {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: .5rem 0; border-bottom: 1px solid var(--border); font-size: 13px;
+}
+.modal-row:last-of-type { border-bottom: none; }
+.modal-key { color: var(--text3); min-width: 56px; flex-shrink: 0; font-size: 12px; padding-top: 1px; }
+.modal-val { color: var(--text2); line-height: 1.5; }
+.share-copy {
+  width: 100%; margin-top: 1rem; padding: 10px;
+  background: rgba(230,57,70,.1); border: 1px solid rgba(230,57,70,.3);
+  color: var(--accent); border-radius: 8px; cursor: pointer;
+  font-size: 13px; font-family: 'Noto Sans KR', sans-serif; transition: all .15s;
+}
+.share-copy:hover { background: var(--accent); color: #fff; }
+
+/* Clubs view */
+.clubs-wrapper { padding: 1rem 1.5rem 2rem; }
+.clubs-area-title {
+  font-family: 'Bebas Neue', cursive; font-size: 18px; letter-spacing: 2px;
+  color: var(--accent2); margin: 1.5rem 0 .6rem;
+  padding-bottom: .4rem; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+}
+.clubs-area-title:first-child { margin-top: 0; }
+.clubs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; margin-bottom: .5rem; }
+.club-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 1rem 1.1rem; transition: border-color .15s;
+}
+.club-card:hover { border-color: var(--border2); }
+.club-card.verified { border-left: 3px solid #22c55e; }
+.club-card.unverified { border-left: 3px solid var(--text3); }
+.club-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 5px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.club-tag { font-size: 9px; padding: 2px 7px; border-radius: 10px; font-weight: 500; }
+.club-tag.after { background: rgba(124,58,237,.2); color: #c084fc; }
+.club-tag.main { background: rgba(21,128,61,.2); color: #4ade80; }
+.club-addr { font-size: 12px; color: var(--text2); margin-bottom: 4px; line-height: 1.4; }
+.club-hours { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
+.club-note { font-size: 11px; color: var(--accent2); font-style: italic; }
+.club-verify { font-size: 10px; margin-top: 6px; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.verify-ok { color: #22c55e; }
+.verify-warn { color: #f59e0b; }
+.verify-unknown { color: var(--text3); }
+.clubs-notice {
+  background: rgba(244,162,97,.07); border: 1px solid rgba(244,162,97,.2);
+  border-radius: 10px; padding: .8rem 1rem; font-size: 12px;
+  color: var(--text2); margin-bottom: 1.2rem; line-height: 1.6;
+}
+
+/* Footer */
+.footer { text-align: center; padding: 2rem; color: var(--text3); font-size: 12px; border-top: 1px solid var(--border); }
+
+/* Mobile */
+@media (max-width: 600px) {
+  .stats-bar { grid-template-columns: repeat(2, 1fr); }
+  .cal-cell { min-height: 60px; padding: 4px; }
+  .event-tag { font-size: 9px; }
+  .list-card { grid-template-columns: 55px 1fr; }
+  .list-card > :last-child { display: none; }
+  .header { padding: .8rem 1rem; }
+  .filters-bar, .cal-wrapper, .list-wrapper, .clubs-wrapper { padding-left: .8rem; padding-right: .8rem; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <div class="logo">Seoul Latin</div>
+    <div class="logo-sub">파티 캘린더</div>
+  </div>
+  <div class="header-right">
+    <button class="view-btn active" id="vb-cal" onclick="switchView('cal')">📅 캘린더</button>
+    <button class="view-btn" id="vb-list" onclick="switchView('list')">📋 리스트</button>
+    <button class="view-btn" id="vb-clubs" onclick="switchView('clubs')">🏢 클럽 정보</button>
+  </div>
+</header>
+
+<div class="loading-bar" id="loading-bar">
+  <div class="loading-spinner" id="spinner"></div>
+  <span id="sync-msg">구글 시트에서 최신 데이터 불러오는 중...</span>
+  <button class="refresh-btn" onclick="loadCSV()" style="display:none" id="refresh-btn">🔄 새로고침</button>
+  <span class="sync-time" id="sync-time"></span>
+</div>
+
+<div class="filters-bar" id="filters-bar">
+  <button class="filter-chip active" onclick="setFilter('all',this)">전체</button>
+  <button class="filter-chip f-salsa" onclick="setFilter('salsa',this)">살사</button>
+  <button class="filter-chip f-bachata" onclick="setFilter('bachata',this)">바차타</button>
+  <button class="filter-chip f-kizomba" onclick="setFilter('kizomba',this)">키좀바</button>
+  <button class="filter-chip f-mixed" onclick="setFilter('mixed',this)">살사/바차타</button>
+  <button class="filter-chip f-zouk" onclick="setFilter('zouk',this)">주크</button>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-item"><div class="stat-num" id="s-total">—</div><div class="stat-lbl">총 파티</div></div>
+  <div class="stat-item"><div class="stat-num" id="s-month">—</div><div class="stat-lbl">이번 달</div></div>
+  <div class="stat-item"><div class="stat-num" id="s-next">—</div><div class="stat-lbl">다음 달</div></div>
+  <div class="stat-item"><div class="stat-num" id="s-venues">—</div><div class="stat-lbl">장소</div></div>
+</div>
+
+<div class="month-nav" id="month-nav">
+  <button class="nav-arrow" onclick="changeMonth(-1)">&#8592;</button>
+  <span class="month-label" id="month-label"></span>
+  <button class="nav-arrow" onclick="changeMonth(1)">&#8594;</button>
+</div>
+
+<div id="cal-view">
+  <div class="cal-wrapper">
+    <div class="cal-head">
+      <div class="cal-head-day">일</div>
+      <div class="cal-head-day">월</div>
+      <div class="cal-head-day">화</div>
+      <div class="cal-head-day">수</div>
+      <div class="cal-head-day">목</div>
+      <div class="cal-head-day">금</div>
+      <div class="cal-head-day">토</div>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+  </div>
+</div>
+
+<div id="list-view" style="display:none">
+  <div class="list-wrapper" id="list-wrapper"></div>
+</div>
+
+<div id="clubs-view" style="display:none">
+  <div class="clubs-wrapper">
+    <div class="clubs-notice">
+      ⚠️ 주소는 Google Maps 검색으로 검증하였습니다. 초록 선(✅)은 검증 완료, 노란 선(⚠️)은 주의 필요, 회색 선은 미확인입니다. 폐업·이전 가능성이 있으니 방문 전 반드시 확인하세요.
+    </div>
+    <div class="clubs-area-title">📍 강남</div>
+    <div class="clubs-grid" id="clubs-gangnam"></div>
+    <div class="clubs-area-title">📍 홍대</div>
+    <div class="clubs-grid" id="clubs-hongdae"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="overlayClose(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-title" id="m-title"></div>
+    <div id="m-badge" style="margin-bottom:.8rem"></div>
+    <div class="modal-row"><span class="modal-key">📅 날짜</span><span class="modal-val" id="m-date"></span></div>
+    <div class="modal-row"><span class="modal-key">📍 장소</span><span class="modal-val" id="m-venue"></span></div>
+    <div class="modal-row"><span class="modal-key">⏰ 시간</span><span class="modal-val" id="m-time"></span></div>
+    <div class="modal-row"><span class="modal-key">🎟 입장료</span><span class="modal-val" id="m-price"></span></div>
+    <div class="modal-row"><span class="modal-key">🎧 DJ/강사</span><span class="modal-val" id="m-dj"></span></div>
+    <div class="modal-row" id="m-ws-row"><span class="modal-key">🎓 워크샵</span><span class="modal-val" id="m-ws"></span></div>
+    <div class="modal-row" id="m-perf-row"><span class="modal-key">⭐ 공연</span><span class="modal-val" id="m-perf"></span></div>
+    <div class="modal-row"><span class="modal-key">📞 연락처</span><span class="modal-val" id="m-contact"></span></div>
+    <div class="modal-row" id="m-note-row"><span class="modal-key">📝 비고</span><span class="modal-val" id="m-note"></span></div>
+    <button class="share-copy" onclick="copyShare()">📋 카카오톡 공유 텍스트 복사</button>
+  </div>
+</div>
+
+<footer class="footer">
+  서울 라틴댄스 파티 정보 · 구글 시트 자동 연동 · 변경될 수 있으니 주최측에 확인하세요
+</footer>
+
+<script>
+// =============================================
+//  구글 시트 CSV URL — 시트 변경 시 여기만 수정
+// =============================================
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQYOGFpPhM3nC9cJlYqiQ5xokpS2pAmZ17Wi8Rny1bZqDtDDEZSws31dhwm8MXwHQ/pub?output=csv";
+
+// =============================================
+//  장르 매핑 (시트에 입력된 텍스트 → 내부 키)
+// =============================================
+const GENRE_MAP = {
+  "살사":"salsa","salsa":"salsa",
+  "바차타":"bachata","bachata":"bachata",
+  "키좀바":"kizomba","kizomba":"kizomba",
+  "살사/바차타":"mixed","살사바차타":"mixed","mixed":"mixed",
+  "주크":"zouk","zouk":"zouk",
+  "스페셜":"special","special":"special"
+};
+const TAG_CLASS  = {salsa:"tag-salsa",bachata:"tag-bachata",kizomba:"tag-kizomba",mixed:"tag-mixed",zouk:"tag-zouk",special:"tag-special"};
+const BADGE_CLASS= {salsa:"badge-salsa",bachata:"badge-bachata",kizomba:"badge-kizomba",mixed:"badge-mixed",zouk:"badge-zouk",special:"badge-special"};
+const GENRE_NAME = {salsa:"살사",bachata:"바차타",kizomba:"키좀바",mixed:"살사/바차타",zouk:"주크",special:"스페셜"};
+const DAYS  = ["일","월","화","수","목","금","토"];
+const MONTHS= ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"];
+
+let EVENTS = [];
+const _today = new Date();
+let year = _today.getFullYear(), month = _today.getMonth();
+let filter = "all", view = "cal", selEv = null;
+
+// =============================================
+//  CSV 파싱 (따옴표·줄바꿈 포함 처리)
+// =============================================
+function parseCSV(text) {
+  const rows = [];
+  let cur = "", row = [], inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inQ) {
+      if (ch === '"' && text[i+1] === '"') { cur += '"'; i++; }
+      else if (ch === '"') { inQ = false; }
+      else { cur += ch; }
+    } else {
+      if (ch === '"') { inQ = true; }
+      else if (ch === ',') { row.push(cur.trim()); cur = ""; }
+      else if (ch === '\n') { row.push(cur.trim()); rows.push(row); row = []; cur = ""; }
+      else if (ch === '\r') { /* skip */ }
+      else { cur += ch; }
+    }
+  }
+  if (cur || row.length) { row.push(cur.trim()); rows.push(row); }
+  return rows;
+}
+
+// =============================================
+//  구글 시트 → EVENTS 로드
+//  컬럼 순서: 날짜(0) 요일(1) 행사명(2) 클럽/주최(3)
+//             장소(4) 상세주소(5) 장르(6) 시간(7)
+//             입장료(8) DJ/강사(9) 워크샵(10) 공연(11)
+//             연락처(12) 비고(13)
+// =============================================
+function loadCSV() {
+  const spinner = document.getElementById("spinner");
+  const msg = document.getElementById("sync-msg");
+  const refreshBtn = document.getElementById("refresh-btn");
+  spinner.style.display = "block";
+  refreshBtn.style.display = "none";
+  msg.className = "";
+  msg.textContent = "구글 시트에서 최신 데이터 불러오는 중...";
+
+  // CORS 우회: no-cors 대신 캐시 버스팅 + cors 모드
+  const url = CSV_URL + "&cachebust=" + Date.now();
+  fetch(url, { cache: "no-cache" })
+    .then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
+    .then(text => {
+      const rows = parseCSV(text);
+      if (rows.length < 2) throw new Error("데이터 없음");
+      // 첫 행 = 헤더, 건너뜀
+      const parsed = [];
+      for (let i = 1; i < rows.length; i++) {
+        const r = rows[i];
+        if (!r[0] || !r[0].match(/^\d{4}-\d{2}-\d{2}$/)) continue; // 날짜 형식 아니면 스킵
+        const rawGenre = (r[6] || "").trim().toLowerCase().replace(/\s/g,"");
+        const genre = GENRE_MAP[rawGenre] || GENRE_MAP[(r[6]||"").trim()] || "mixed";
+        parsed.push({
+          date:    r[0]  || "",
+          name:    r[2]  || "",
+          host:    r[3]  || "",
+          venue:   r[4]  || "",
+          addr:    r[5]  || "",
+          genre:   genre,
+          time:    r[7]  || "—",
+          price:   r[8]  || "—",
+          dj:      r[9]  || "—",
+          ws:      r[10] || "—",
+          perf:    r[11] || "—",
+          contact: r[12] || "—",
+          note:    r[13] || ""
+        });
+      }
+      EVENTS = parsed;
+      const now = new Date();
+      const hm = now.getHours().toString().padStart(2,"0") + ":" + now.getMinutes().toString().padStart(2,"0");
+      spinner.style.display = "none";
+      msg.className = "sync-ok";
+      msg.textContent = `✅ 최신 데이터 반영 완료 (${EVENTS.length}개 일정)`;
+      document.getElementById("sync-time").textContent = "마지막 동기화: " + hm;
+      refreshBtn.style.display = "inline-block";
+      renderCal();
+      if (view === "list") renderList();
+      updateStats();
+    })
+    .catch(err => {
+      spinner.style.display = "none";
+      msg.className = "sync-err";
+      msg.textContent = "⚠️ 데이터 로드 실패 — 잠시 후 다시 시도해주세요 (" + err.message + ")";
+      refreshBtn.style.display = "inline-block";
+    });
+}
+
+// =============================================
+//  필터·렌더링
+// =============================================
+function filtered() {
+  return EVENTS.filter(e => filter === "all" || e.genre === filter);
+}
+
+function renderCal() {
+  const grid = document.getElementById("cal-grid");
+  grid.innerHTML = "";
+  const first = new Date(year, month, 1).getDay();
+  const last  = new Date(year, month+1, 0).getDate();
+  const today = new Date();
+  const evts  = filtered();
+  for (let i = 0; i < first; i++) {
+    const c = document.createElement("div"); c.className = "cal-cell other-month"; grid.appendChild(c);
+  }
+  for (let d = 1; d <= last; d++) {
+    const ds = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const de = evts.filter(e => e.date === ds);
+    const isT = (today.getFullYear()===year && today.getMonth()===month && today.getDate()===d);
+    const dow = new Date(year, month, d).getDay();
+    const c = document.createElement("div");
+    c.className = "cal-cell" + (de.length?" has-event":"") + (isT?" is-today":"") + (dow===0?" sun":"");
+    const dn = document.createElement("div"); dn.className = "cell-date"; dn.textContent = d; c.appendChild(dn);
+    de.slice(0,2).forEach(ev => {
+      const t = document.createElement("span");
+      t.className = "event-tag " + (TAG_CLASS[ev.genre] || "tag-mixed");
+      t.textContent = ev.name;
+      t.onclick = (e) => { e.stopPropagation(); openModal(ev); };
+      c.appendChild(t);
+    });
+    if (de.length > 2) {
+      const m = document.createElement("div"); m.className = "more-tag"; m.textContent = `+${de.length-2}개 더`; c.appendChild(m);
+    }
+    grid.appendChild(c);
+  }
+  updateStats();
+}
+
+function renderList() {
+  const wrap = document.getElementById("list-wrapper"); wrap.innerHTML = "";
+  const evts = filtered().filter(e => {
+    const d = new Date(e.date); return d.getFullYear()===year && d.getMonth()===month;
+  });
+  if (!evts.length) { wrap.innerHTML = '<div class="empty-msg">이 달에 해당하는 파티가 없습니다.</div>'; return; }
+  evts.forEach(ev => {
+    const d = new Date(ev.date);
+    const card = document.createElement("div"); card.className = "list-card";
+    card.innerHTML = `<div class="lc-date"><div class="lc-m">${MONTHS[d.getMonth()]}</div><div class="lc-d">${d.getDate()}</div><div class="lc-w">${DAYS[d.getDay()]}요일</div></div><div><div class="lc-name">${ev.name}</div><div class="lc-venue">📍 ${ev.venue}</div><div class="lc-info">⏰ ${ev.time} &nbsp;|&nbsp; 🎟 ${ev.price}</div></div><div><span class="genre-badge ${BADGE_CLASS[ev.genre]||"badge-mixed"}">${GENRE_NAME[ev.genre]||ev.genre}</span></div>`;
+    card.onclick = () => openModal(ev);
+    wrap.appendChild(card);
+  });
+}
+
+function updateStats() {
+  const all = filtered();
+  const now = new Date();
+  const tm = all.filter(e => { const d=new Date(e.date); return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth(); }).length;
+  const nm = all.filter(e => { const d=new Date(e.date); return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()+1; }).length;
+  const venues = new Set(all.map(e => e.venue)).size;
+  document.getElementById("s-total").textContent  = all.length;
+  document.getElementById("s-month").textContent  = tm;
+  document.getElementById("s-next").textContent   = nm;
+  document.getElementById("s-venues").textContent = venues;
+}
+
+function changeMonth(d) {
+  month += d;
+  if (month > 11) { month = 0; year++; }
+  if (month < 0)  { month = 11; year--; }
+  document.getElementById("month-label").textContent = `${year}년 ${MONTHS[month]}`;
+  if (view === "cal") renderCal(); else renderList();
+}
+
+function setFilter(f, btn) {
+  filter = f;
+  document.querySelectorAll(".filter-chip").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  if (view === "cal") renderCal(); else renderList();
+}
+
+function switchView(v) {
+  view = v;
+  ["cal","list","clubs"].forEach(n => {
+    document.getElementById("vb-"+n).classList.toggle("active", v===n);
+    document.getElementById(n+"-view").style.display = v===n ? "block" : "none";
+  });
+  const isCalList = v==="cal" || v==="list";
+  document.getElementById("month-nav").style.display   = isCalList ? "flex" : "none";
+  document.getElementById("filters-bar").style.display = isCalList ? "flex" : "none";
+  if (v === "list") renderList();
+}
+
+// =============================================
+//  모달
+// =============================================
+function openModal(ev) {
+  selEv = ev;
+  const d = new Date(ev.date);
+  document.getElementById("m-title").textContent   = ev.name;
+  document.getElementById("m-badge").innerHTML     = `<span class="genre-badge ${BADGE_CLASS[ev.genre]||"badge-mixed"}">${GENRE_NAME[ev.genre]||ev.genre}</span>${ev.host ? `<span style="margin-left:8px;font-size:12px;color:var(--text2)">${ev.host}</span>` : ""}`;
+  document.getElementById("m-date").textContent    = `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 (${DAYS[d.getDay()]})`;
+  document.getElementById("m-venue").textContent   = ev.addr ? `${ev.venue} — ${ev.addr}` : ev.venue;
+  document.getElementById("m-time").textContent    = ev.time;
+  document.getElementById("m-price").textContent   = ev.price;
+  document.getElementById("m-dj").textContent      = ev.dj;
+  document.getElementById("m-ws").textContent      = ev.ws;
+  document.getElementById("m-perf").textContent    = ev.perf;
+  document.getElementById("m-contact").textContent = ev.contact;
+  document.getElementById("m-note").textContent    = ev.note;
+  document.getElementById("m-ws-row").style.display   = ev.ws   && ev.ws   !== "—" ? "flex" : "none";
+  document.getElementById("m-perf-row").style.display = ev.perf && ev.perf !== "—" ? "flex" : "none";
+  document.getElementById("m-note-row").style.display = ev.note && ev.note !== ""  ? "flex" : "none";
+  document.getElementById("modal-overlay").classList.add("show");
+}
+function closeModal() { document.getElementById("modal-overlay").classList.remove("show"); selEv = null; }
+function overlayClose(e) { if (e.target===document.getElementById("modal-overlay")) closeModal(); }
+
+function copyShare() {
+  if (!selEv) return;
+  const d = new Date(selEv.date);
+  const txt = `🎵 [서울 라틴댄스 파티 정보]\n\n🗓 ${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 (${DAYS[d.getDay()]})\n💃 ${selEv.name}\n📍 ${selEv.venue}${selEv.addr?" — "+selEv.addr:""}\n⏰ ${selEv.time}\n🎟 입장료: ${selEv.price}\n🎧 DJ/강사: ${selEv.dj}\n📞 문의: ${selEv.contact}${selEv.note?"\n📝 "+selEv.note:""}\n\n※ 정보 변경 가능, 주최측 확인 바랍니다.`;
+  navigator.clipboard.writeText(txt)
+    .then(() => alert("✅ 복사 완료!\n카카오톡방에 붙여넣기 하세요."))
+    .catch(() => {
+      const ta = document.createElement("textarea"); ta.value = txt;
+      document.body.appendChild(ta); ta.select(); document.execCommand("copy");
+      document.body.removeChild(ta); alert("✅ 복사 완료!");
+    });
+}
+
+// =============================================
+//  클럽 정보 (고정 데이터)
+// =============================================
+const CLUBS = {
+  gangnam: [
+    {name:"강남 라틴빠",tag:"main",addr:"강남구 테헤란로 6길 9, 지하1·2층 (역삼동 824-38)",addrNote:"입력 주소와 일치",hours:"월 8PM~자정 / 화~목 9PM~1AM / 금토 9PM~3AM / 일 8PM~자정",note:"살사·바차타·키좀바 메인 클럽",verify:"ok"},
+    {name:"강남턴 (Turn Salsa)",tag:"main",addr:"강남구 역삼로 3길 17-5, 지하1층 (역삼동 831-34)",addrNote:"Google Maps 일치. '역삼1동'은 행정동명 — 법정동은 역삼동",hours:"화·수·금 8PM~1AM / 토 8PM~5AM / 일 8PM~3AM / 월·목 휴무",note:"카카오톡: 행복한 강남턴 | ☎ 02-557-2228",verify:"ok"},
+    {name:"Sol bar (2차)",tag:"after",addr:"강남구 테헤란로 8길 11-7, 지하1층",addrNote:"Google Maps 일치",hours:"금~일 자정~6AM (평일 휴무)",note:"2차 애프터 클럽, 입장 무료",verify:"ok"},
+    {name:"마이애미 (1차빠, ~자정)",tag:"main",addr:"강남구 테헤란로 14길 25, 2층 (역삼동 741)",addrNote:"Google Maps 일치",hours:"매일 7PM~2AM (~자정 1차)",note:"수아쌀롱과 같은 건물 2층",verify:"ok"},
+    {name:"수아쌀롱 (2차빠, 자정~)",tag:"after",addr:"강남구 테헤란로 14길 25, 2층 (역삼동 741)",addrNote:"마이애미와 동일 건물",hours:"자정 이후 오픈",note:"☎ 010-2173-7709",verify:"ok"},
+    {name:"뉴욕바 (El Cafe Latino)",tag:"main",addr:"강남구 강남대로 84길 24-4, 지하1층 (역삼동 827-3)",addrNote:"Google Maps 일치",hours:"월~목 10PM~5AM / 금 8PM~5AM / 토일 6PM~5AM",note:"☎ 010-2719-6406",verify:"ok"},
+    {name:"압구정 살사클럽 탑 (TOP)",tag:"main",addr:"강남구 압구정로 224, 지하1층 (신사동 616-2, 우미빌딩)",addrNote:"Google Maps 일치. '우미빌딩' 건물명 미확인",hours:"월~토 7PM~2AM / 일 9PM~1AM",note:"☎ 010-6719-9001",verify:"warn"},
+    {name:"압구정 On2",tag:"main",addr:"강남구 신사동 논현로 167길 12",addrNote:"Google Maps 독립 검색 미확인",hours:"미확인",note:"방문 전 확인 필요",verify:"unknown"},
+    {name:"아지트",tag:"main",addr:"강남구 역삼동 831-30, 지하1층",addrNote:"Google Maps 일치",hours:"비정기 운영",note:"다목적 소셜 공간·대관 병행",verify:"ok"},
+  ],
+  hongdae: [
+    {name:"보니따 (Bonita)",tag:"main",addr:"마포구 동교로 191, 지하1층 (디비엠빌딩)",addrNote:"Google Maps 일치. ※ '디비엠딜딩' → '디비엠빌딩' 오타 수정",hours:"매일 8:00~8:30PM~2AM",note:"☎ 010-9218-3132",verify:"warn"},
+    {name:"홍턴 (Hong Turn)",tag:"main",addr:"마포구 동교로 207, 현우빌딩 지하1층 (동교동 199-3)",addrNote:"Google Maps 일치",hours:"화·목·금·토 9PM~3AM / 일 6PM~자정 / 월·수 휴무",note:"☎ 010-3075-2813",verify:"ok"},
+    {name:"부에나 (Buena)",tag:"main",addr:"마포구 동교로 217, 지하1층 (동교동 198-30, 홍대LJ빌딩)",addrNote:"Google Maps 일치",hours:"주말 10PM~4AM (비정기)",note:"무료입장 주말 운영",verify:"ok"},
+    {name:"까리베 (2차)",tag:"after",addr:"마포구 월드컵북로 6길 60, 지하1층",addrNote:"Google Maps 일치",hours:"매일 9PM~6AM (금토 24시간)",note:"☎ 010-2975-1001",verify:"ok"},
+    {name:"마콘도 (Macondo)",tag:"main",addr:"마포구 홍익로 6길 48, 지하1층 (동교동)",addrNote:"Google Maps 일치",hours:"화~일 9PM~4AM / 월 휴무",note:"☎ 010-6655-0956",verify:"ok"},
+    {name:"펠리스클럽",tag:"main",addr:"마포구 월드컵북로 2길, 금화빌딩 B1층",addrNote:"번지수 누락 — 검증 불가",hours:"미확인",note:"방문 전 번지수 확인 필요",verify:"unknown"},
+    {name:"안단테",tag:"main",addr:"마포구 양화로 12길 24, 지하1층 (서교동, 선진빌딩)",addrNote:"독립 검색 미확인",hours:"미확인",note:"방문 전 확인 필요",verify:"unknown"},
+    {name:"놀이터 (2차)",tag:"after",addr:"마포구 동교로 213, 지하1층 (동교동)",addrNote:"Google Maps 일치",hours:"매일 9PM~7AM (금토 더 늦게까지)",note:"☎ 010-8201-6900 | 2차 애프터",verify:"ok"},
+    {name:"하바나 (Havana)",tag:"main",addr:"마포구 어울마당로 53, 지하",addrNote:"Google Maps 일치",hours:"화·목 8PM~2AM / 수 7:30PM~3AM / 금토 8PM~5AM / 일 9PM~2AM / 월 휴무",note:"☎ 02-335-6709",verify:"ok"},
+    {name:"아난타라",tag:"main",addr:"마포구 양화로 18안길 20, 지하1층",addrNote:"독립 검색 미확인",hours:"미확인",note:"방문 전 확인 필요",verify:"unknown"},
+    {name:"솔SOL빠",tag:"after",addr:"마포구 홍익로 6길 83, 지하1층 (동교동)",addrNote:"Google Maps 일치",hours:"금~일 10PM~6AM / 평일 휴무",note:"☎ 010-9125-6101 | 애프터 클럽",verify:"ok"},
+    {name:"꼼애야 (2차)",tag:"after",addr:"마포구 동교로 209-4, 지하1층",addrNote:"독립 검색 미확인",hours:"화·금·토 자정~7AM",note:"파티 일정은 달력 참고",verify:"unknown"},
+  ]
+};
+
+function renderClubs() {
+  ["gangnam","hongdae"].forEach(area => {
+    const el = document.getElementById("clubs-"+area); el.innerHTML = "";
+    CLUBS[area].forEach(c => {
+      const vi = c.verify==="ok" ? `<span class="verify-ok">✅ 검증완료</span>`
+               : c.verify==="warn" ? `<span class="verify-warn">⚠️ 오타수정</span>`
+               : `<span class="verify-unknown">❓ 미검증</span>`;
+      const tg = c.tag==="after" ? `<span class="club-tag after">2차/애프터</span>` : `<span class="club-tag main">메인</span>`;
+      el.innerHTML += `<div class="club-card ${c.verify==="unknown"?"unverified":"verified"}">
+        <div class="club-name">${c.name} ${tg}</div>
+        <div class="club-addr">📍 ${c.addr}</div>
+        <div class="club-hours">⏰ ${c.hours}</div>
+        ${c.note?`<div class="club-note">💬 ${c.note}</div>`:""}
+        <div class="club-verify">${vi}<span style="color:var(--text3);font-size:10px;margin-left:4px">${c.addrNote}</span></div>
+      </div>`;
+    });
+  });
+}
+
+// =============================================
+//  초기화
+// =============================================
+document.getElementById("month-label").textContent = `${year}년 ${MONTHS[month]}`;
+renderClubs();
+loadCSV();
+</script>
+</body>
+</html>
