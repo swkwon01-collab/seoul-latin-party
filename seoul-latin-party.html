@@ -510,10 +510,10 @@ function loadCSV() {
     .then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
     .then(text => {
       const rows = parseCSV(text);
-      if (rows.length < 2) throw new Error("데이터 없음");
-      // 첫 행 = 헤더, 건너뜀
+      if (rows.length < 4) throw new Error("데이터 없음");
+      // 1~3행 = 헤더/설명행, 건너뜀 (4행부터 실제 데이터)
       const parsed = [];
-      for (let i = 1; i < rows.length; i++) {
+      for (let i = 3; i < rows.length; i++) {
         const r = rows[i];
         if (!r[0] || !r[0].match(/^\d{4}-\d{2}-\d{2}$/)) continue; // 날짜 형식 아니면 스킵
         const rawGenre = (r[6] || "").trim().toLowerCase().replace(/\s/g,"");
