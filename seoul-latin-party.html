@@ -504,10 +504,14 @@ function loadCSV() {
   msg.className = "";
   msg.textContent = "구글 시트에서 최신 데이터 불러오는 중...";
 
-  // CORS 우회: no-cors 대신 캐시 버스팅 + cors 모드
+  // CORS 우회: 캐시 버스팅 + cors 모드
   const url = CSV_URL + "&cachebust=" + Date.now();
-  fetch(url, { cache: "no-cache" })
-    .then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
+  fetch(url, { cache: "no-cache", mode: "cors" })
+    .then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.arrayBuffer(); })
+    .then(buf => {
+      const text = new TextDecoder("utf-8").decode(buf).replace(/^\uFEFF/, "");
+      return text;
+    })
     .then(text => {
       const rows = parseCSV(text);
       if (rows.length < 4) throw new Error("데이터 없음");
