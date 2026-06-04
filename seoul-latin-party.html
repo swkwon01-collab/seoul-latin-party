@@ -504,9 +504,12 @@ function loadCSV() {
   msg.className = "";
   msg.textContent = "구글 시트에서 최신 데이터 불러오는 중...";
 
-  // 구글 시트 CSV 직접 fetch (구글은 CORS 허용)
-  const url = CSV_URL + "&cachebust=" + Date.now();
-  fetch(url)
+  // 구글 시트 CSV fetch
+  const url = CSV_URL;
+  fetch(url, {
+    method: "GET",
+    headers: { "Accept": "text/csv" }
+  })
     .then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
     .then(text => text.replace(/^\uFEFF/, ""))
     .then(text => {
@@ -550,7 +553,8 @@ function loadCSV() {
     .catch(err => {
       spinner.style.display = "none";
       msg.className = "sync-err";
-      msg.textContent = "⚠️ 데이터 로드 실패 — 잠시 후 다시 시도해주세요 (" + err.message + ")";
+      msg.textContent = "⚠️ 데이터 로드 실패: " + err.message;
+      console.error("CSV 로드 오류:", err);
       refreshBtn.style.display = "inline-block";
     });
 }
